@@ -11,16 +11,13 @@ def init_jeu(nb_lignes, nb_colonnes):
     pioche = ["N1","NE1","E1","SE1","S1","SO1","O1","NO1","N2","NE2","E2","SE2","S2","SO2","O2","NO2","N3","NE3","E3","SE3","S3","SO3","O3","NO3"]
     main_b = []
     main_r = []
-    for i in range(10):
-        c=random.choice(pioche)
-        pioche.remove(c)
-        if i%2 == 0:
-            main_r.append(c)
-        else:
-            main_b.append(c)
-    random.shuffle(pioche)
     defausse = []
     
+    random.shuffle(pioche) # On mélange la pioche
+    main_r.append(pioche[0:5]) # On distribue les 5 premières cartes au joueur rouge..
+    main_b.append(pioche[5:10]) # ..Et les 5 suivantes au joueur blanc
+    del pioche[0:10] # On supprime les cartes piochées de la pioche
+
     return (plateau, l_roi, c_roi, main_r, main_b, pioche, defausse)
 
 
@@ -63,8 +60,8 @@ afficher_jeu(plt,lr,cr,mr,mb)
 
 
 ###Mouvement du roi possible###
-def mouvement_possible(plateau, l_roi, c_roi, carte):
-    if plateau[l_roi][c_roi] + 
+#def mouvement_possible(plateau, l_roi, c_roi, carte):
+#    if plateau[l_roi][c_roi] + 
 
 
 ###Main jouable###
