@@ -13,14 +13,16 @@ def init_jeu(nb_lignes, nb_colonnes):
     defausse = []
 
     random.shuffle(pioche) # On mélange la pioche
-    main_r.append(pioche[0:5]) # On distribue les 5 premières cartes au joueur rouge..
-    main_b.append(pioche[5:10]) # ..Et les 5 suivantes au joueur blanc
+    main_r = pioche[0:5] # On distribue les 5 premières cartes au joueur rouge..
+    main_b = pioche[5:10] # ..Et les 5 suivantes au joueur blanc
     del pioche[0:10] # On supprime les cartes piochées de la pioche
 
     return (plateau, l_roi, c_roi, main_r, main_b, pioche, defausse)
 
 
 ### Affichage de l'état du jeu ###
+
+# Affiche la main du joueur de la couleur renseignée
 def afficher_main(couleur, main):
     print(f"{couleur} : ", end="")
     for carte in main:
