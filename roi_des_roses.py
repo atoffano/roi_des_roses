@@ -61,8 +61,27 @@ afficher_jeu(plt,lr,cr,mr,mb)
 
 
 ### Mouvement du roi possible ###
-#def mouvement_possible(plateau, l_roi, c_roi, carte):
-#    if plateau[l_roi][c_roi] + 
+def mouvement_possible(plateau, l_roi, c_roi, carte):
+    new_l_roi = l_roi
+    new_c_roi = c_roi
+    dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
+    for i in range(len(carte)-1):  # On calcule les coordonnées d'arrivée du roi en fonction du/des vecteurs (N, E, S, O) associés à la carte
+        if carte[i] == 'N':
+            new_l_roi -= dist_parcourue
+        elif carte[i] == 'E':
+            new_c_roi += dist_parcourue        
+        elif carte[i] == 'S':
+            new_l_roi += dist_parcourue
+        else:
+            new_c_roi -= dist_parcourue
+
+    if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie que la position finale n'est pas hors du plateau..
+        return False
+
+    if plateau[l_roi][c_roi] != ".": # ..Et qu'elle est bien vide
+        return False
+
+    return True # Si toutes les conditions sont validées, le mouvement est possible !
 
 
 ### Main jouable ###
@@ -81,8 +100,15 @@ def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur
 
 
 ### Definition des territoires ###
-def territoire(plateau, ligne, colonne, couleur):
-    pass
+#def territoire(plateau, ligne, colonne, couleur):
+#    if plateau[ligne, colonne] == couleur:
+#        territoire = []
+#        territoire.append((ligne, colonne))
+#        while True:
+            
+        
+
+
 
 
 ### Scores ###
