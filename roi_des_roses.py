@@ -75,24 +75,40 @@ def mouvement_possible(plateau, l_roi, c_roi, carte):
         else:
             new_c_roi -= dist_parcourue
 
-    if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie que la position finale n'est pas hors du plateau..
+    if plateau[l_roi][c_roi] != ".": # On vérifie que la case d'arrivée est bien vide
         return False
 
-    if plateau[l_roi][c_roi] != ".": # ..Et qu'elle est bien vide
-        return False
-
-    return True # Si toutes les conditions sont validées, le mouvement est possible !
+    if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie finalement  que la position finale n'est pas hors du plateau
+        return True
+    return False # Si toutes les conditions sont validées, le mouvement est possible !
 
 
 ### Main jouable ###
 def main_jouable(plateau, l_roi, c_roi, main):
-    pass
+    main_jouable = []
+    for carte in main: # Pour chaque carte dans la main du joueur, si le mouvement est possible, ajoute la carte à une liste.
+        if mouvement_possible(plateau, l_roi, c_roi, carte) == True:
+            main_jouable.append(carte)
+    return main_jouable # On retourne la liste de cartes jouables
+
+print(main_jouable(plt,lr,cr,mr))
 
 
 ### Demande une action à un joueur ###
 def demande_action(couleur, plateau, l_roi, c_roi, main):
-    pass
+    print("Vous  êtes le  joueur " + couleur + ", que souhaitez -vous  faire ?\n")
+# On demande une action et on teste sa validité. On recommence jusqu'à ce que le joueur donne une action valide
+    while True: 
+        action = input()
+        if action == "passe":
+            return action
+        if action == "pioche" and len(main) < 5:
+            return action
+        if action in main_jouable(plateau, l_roi, c_roi, main):
+            return action
+        print("Action impossible, que souhaitez-vous faire ? ")
 
+print(demande_action("Rouge",plt,lr,cr,mb))
 
 ### Bouge le roi ###
 def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
