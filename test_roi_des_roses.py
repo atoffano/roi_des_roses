@@ -35,3 +35,39 @@ def test_init_jeu(nb_lignes, nb_colonnes):
     return "init_jeu a passé le test"
 
 print(test_init_jeu(9,9))
+
+def mouvement_possible(plateau, l_roi, c_roi, carte):
+    new_l_roi = l_roi
+    new_c_roi = c_roi
+    dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
+    for i in range(len(carte)-1):  # On calcule les coordonnées d'arrivée du roi en fonction du/des vecteurs (N, E, S, O) associés à la carte
+        if carte[i] == 'N':
+            new_l_roi -= dist_parcourue
+        elif carte[i] == 'E':
+            new_c_roi += dist_parcourue        
+        elif carte[i] == 'S':
+            new_l_roi += dist_parcourue
+        else:
+            new_c_roi -= dist_parcourue
+
+    if plateau[l_roi][c_roi] != ".": # On vérifie que la case d'arrivée est bien vide
+        return False
+
+    if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie finalement  que la position finale n'est pas hors du plateau
+        return True
+    return False # Si toutes les conditions sont validées, le mouvement est possible !
+
+def test_mouvement_possible(plateau, l_roi, c_roi, carte):
+    
+### Main jouable ###
+def main_jouable(plateau, l_roi, c_roi, main):
+    main_jouable = []
+    for carte in main: # Pour chaque carte dans la main du joueur, si le mouvement est possible, ajoute la carte à une liste.
+        if mouvement_possible(plateau, l_roi, c_roi, carte) == True:
+            main_jouable.append(carte)
+    return main_jouable # On retourne la liste de cartes jouables
+
+print(main_jouable(plt,lr,cr,mr))
+
+def test_main_jouable(plateau, l_roi, c_roi, main):
+    pass

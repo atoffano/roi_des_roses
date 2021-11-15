@@ -54,9 +54,6 @@ def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
 
 #modif *46
 
-plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9, 9)
-afficher_jeu(plt,lr,cr,mr,mb)
-
 
 
 
@@ -91,7 +88,6 @@ def main_jouable(plateau, l_roi, c_roi, main):
             main_jouable.append(carte)
     return main_jouable # On retourne la liste de cartes jouables
 
-print(main_jouable(plt,lr,cr,mr))
 
 
 ### Demande une action à un joueur ###
@@ -108,7 +104,6 @@ def demande_action(couleur, plateau, l_roi, c_roi, main):
             return action
         print("Action impossible, que souhaitez-vous faire ? ")
 
-print(demande_action("Rouge",plt,lr,cr,mb))
 
 ### Bouge le roi ###
 def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
@@ -134,4 +129,5 @@ def score(plateau, couleur):
 
 ### Boucle de jeu principale ###
 def main():
+#   plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9, 9)
     pass
