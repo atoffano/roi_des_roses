@@ -76,8 +76,8 @@ def mouvement_possible(plateau, l_roi, c_roi, carte):
         return False
 
     if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie finalement  que la position finale n'est pas hors du plateau
-        return True
-    return False # Si toutes les conditions sont validées, le mouvement est possible !
+        return True # Si toutes les conditions sont validées, le mouvement est possible !
+    return False 
 
 
 ### Main jouable ###
