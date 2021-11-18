@@ -24,11 +24,11 @@ def init_jeu(nb_lignes, nb_colonnes):
 
 # Affiche la main du joueur de la couleur renseignée
 def afficher_main(couleur, main):
-    print(f"{couleur} : ", end="")
-    for carte in main:
-        print(f"{carte} ", end="")
-    print ("")
-
+    main_a_afficher = couleur + " : "
+    for i in range(len(main)-1):
+        main_a_afficher += main[i] + " "
+    main_a_afficher += main[-1]
+    print(main_a_afficher)
 
 def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
     afficher_main("Rouge", main_r)
@@ -53,6 +53,8 @@ def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
     print("-"*46)
 
 #modif *46
+plt , lr, cr, mr, mb, pioche , defausse = init_jeu(9, 9)
+afficher_jeu(plt , lr, cr, mr, mb)
 
 
 
@@ -72,10 +74,10 @@ def mouvement_possible(plateau, l_roi, c_roi, carte):
         else:
             new_c_roi -= dist_parcourue
 
-    if plateau[l_roi][c_roi] != ".": # On vérifie que la case d'arrivée est bien vide
+    if plateau[new_l_roi][new_c_roi] != ".": # On vérifie que la case d'arrivée est bien vide
         return False
 
-    if 0 <= new_l_roi <= 9 and 0 <= new_c_roi <= 9: # On vérifie finalement  que la position finale n'est pas hors du plateau
+    if 0 <= new_l_roi <= len(plateau) and 0 <= new_c_roi <= len(plateau): # On vérifie finalement  que la position finale n'est pas hors du plateau
         return True # Si toutes les conditions sont validées, le mouvement est possible !
     return False 
 
@@ -87,7 +89,6 @@ def main_jouable(plateau, l_roi, c_roi, main):
         if mouvement_possible(plateau, l_roi, c_roi, carte) == True:
             main_jouable.append(carte)
     return main_jouable # On retourne la liste de cartes jouables
-
 
 
 ### Demande une action à un joueur ###
@@ -107,20 +108,71 @@ def demande_action(couleur, plateau, l_roi, c_roi, main):
 
 ### Bouge le roi ###
 def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
-    pass
+    new_l_roi = l_roi
+    new_c_roi = c_roi
+    dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
+    for i in range(len(carte)-1):  # On calcule les coordonnées d'arrivée du roi en fonction du/des vecteurs (N, E, S, O) associés à la carte
+        if carte[i] == 'N':
+            new_l_roi -= dist_parcourue
+        elif carte[i] == 'E':
+            new_c_roi += dist_parcourue        
+        elif carte[i] == 'S':
+            new_l_roi += dist_parcourue
+        else:
+            new_c_roi -= dist_parcourue
 
 
 ### Definition des territoires ###
-#def territoire(plateau, ligne, colonne, couleur):
-#    if plateau[ligne, colonne] == couleur:
-#        territoire = []
-#        territoire.append((ligne, colonne))
-#        while True:
-            
-        
+def territoire(plateau, ligne, colonne, couleur):
+    territoire = []
+    if plateau[ligne][colonne] == couleur:
+        territoire.append([ligne, colonne])
+        territoire_voisins = check_voisins(plateau, ligne, colonne, couleur, [])
+        print("ter_vois1" + str(territoire_voisins))
+        while territoire_voisins != []:
+            for voisin in territoire_voisins:
+                if voisin not in territoire:
+                    territoire.append(voisin)
+                    print("terri =" +str(territoire))
+                    print(voisin)
+                    new_line = voisin[0]
+                    new_col = voisin[1]
+                    territoire_voisins += check_voisins(plateau, new_line, new_col, couleur, territoire_voisins)
+                print("ter_vois" + str(territoire_voisins))
+                territoire_voisins.remove(voisin)
+        a_renvoyer = []
+        for case in territoire:
+            a_renvoyer.append(tuple(case))
+        return a_renvoyer
 
 
 
+
+def check_voisins(plateau, ligne, colonne, couleur, territoire_voisins):
+    voisins = []
+    if plateau[ligne +1] [colonne] == couleur and plateau[ligne +1] [colonne] not in territoire_voisins:
+        voisins.append([ligne +1, colonne])
+    if plateau[ligne -1] [colonne] == couleur:
+        voisins.append([ligne -1, colonne])
+    if plateau[ligne] [colonne + 1] == couleur:
+        voisins.append([ligne, colonne + 1])    
+    if plateau[ligne] [colonne - 1] == couleur:
+        voisins.append([ligne, colonne - 1])
+    return voisins
+
+plt[2][5]="R"
+plt[2][6]="R"
+plt[2][7]="R"
+plt[3][4]="R"
+plt[4][4]="R"
+plt[5][4]="R"
+plt[5][6]="R"
+plt[2][4]="R"
+plt[5][5]="R" 
+plt[1][5]="R"
+print(plt)
+afficher_jeu(plt , lr, cr, mr, mb)
+print(territoire(plt, 2, 4, "R"))
 
 ### Scores ###
 def score(plateau, couleur):
