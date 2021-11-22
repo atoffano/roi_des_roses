@@ -173,6 +173,7 @@ print(len(list(dict.fromkeys(territoire(plt, 2, 4, "R")))))
 
 ### Scores ###
 def score(plateau, couleur):
+    pass
     
 
 
