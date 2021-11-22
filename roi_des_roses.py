@@ -1,6 +1,8 @@
 import random    
 
+#############################
 ### Initialisation du jeu ###
+#############################
 def init_jeu(nb_lignes, nb_colonnes):
 
     # Initialisation des variables
@@ -20,7 +22,9 @@ def init_jeu(nb_lignes, nb_colonnes):
     return (plateau, l_roi, c_roi, main_r, main_b, pioche, defausse)
 
 
+##################################
 ### Affichage de l'état du jeu ###
+##################################
 
 # Affiche la main du joueur de la couleur renseignée
 def afficher_main(couleur, main):
@@ -28,7 +32,6 @@ def afficher_main(couleur, main):
     for i in range(len(main)-1):
         main_a_afficher += main[i] + " "
     main_a_afficher += main[-1]
-    print(main_a_afficher)
 
 def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
     afficher_main("Rouge", main_r)
@@ -59,7 +62,9 @@ afficher_jeu(plt , lr, cr, mr, mb)
 
 
 
+#################################
 ### Mouvement du roi possible ###
+#################################
 def mouvement_possible(plateau, l_roi, c_roi, carte):
     new_l_roi = l_roi
     new_c_roi = c_roi
@@ -81,8 +86,10 @@ def mouvement_possible(plateau, l_roi, c_roi, carte):
         return True # Si toutes les conditions sont validées, le mouvement est possible !
     return False 
 
-
+####################
 ### Main jouable ###
+####################
+
 def main_jouable(plateau, l_roi, c_roi, main):
     main_jouable = []
     for carte in main: # Pour chaque carte dans la main du joueur, si le mouvement est possible, ajoute la carte à une liste.
@@ -90,14 +97,16 @@ def main_jouable(plateau, l_roi, c_roi, main):
             main_jouable.append(carte)
     return main_jouable # On retourne la liste de cartes jouables
 
-
+######################################
 ### Demande une action à un joueur ###
+######################################
+
 def demande_action(couleur, plateau, l_roi, c_roi, main):
     print("Vous  êtes le  joueur " + couleur + ", que souhaitez -vous  faire ?\n")
 # On demande une action et on teste sa validité. On recommence jusqu'à ce que le joueur donne une action valide
     while True: 
         action = input()
-        if action == "passe":
+        if action == "passe" and main_jouable(plateau, l_roi, c_roi, main) == []:
             return action
         if action == "pioche" and len(main) < 5: # On vérifie que la main n'est pas pleine si le joueur choisit de piocher.
             return action
@@ -106,7 +115,10 @@ def demande_action(couleur, plateau, l_roi, c_roi, main):
         print("Action impossible, que souhaitez-vous faire ? ")
 
 
+####################
 ### Bouge le roi ###
+####################
+
 def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
     new_l_roi = l_roi
     new_c_roi = c_roi
@@ -120,9 +132,19 @@ def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur
             new_l_roi += dist_parcourue
         else:
             new_c_roi -= dist_parcourue
+    if couleur == "Rouge":
+        plateau[l_roi][c_roi] = "R"     #on pose un pion de la bonne couleur
+        main_r.remove(carte)            #on supprime la carte de la main du joueur
+    else:
+        plateau[l_roi][c_roi] = "B"
+        main_b.remove(carte)
+    defausse.append(carte)              #on ajoute cette carte à la defausse
+    return (plateau, l_roi, c_roi, main_r, main_b, defausse)
 
-
+##################################
 ### Definition des territoires ###
+##################################
+
 def territoire(plateau, ligne, colonne, couleur):
     territoire = []
     if plateau[ligne][colonne] == couleur: # Si la case est de la bonne couleur, on ajoute ses coordonnées à la liste des territoires.
@@ -153,31 +175,85 @@ def check_voisins(plateau, ligne, colonne, couleur):
     if colonne - 1 >= 0 and plateau[ligne] [colonne - 1] == couleur:
         voisins.append([ligne, colonne - 1])
     return voisins
-plt = [["R" for count in range(9)] for count in range(9)]
 
-plt[2][5]="R"
-plt[2][6]="R"
-plt[2][7]="R"
-plt[3][4]="R"
-plt[4][4]="R"
-plt[5][4]="R"
-plt[5][6]="R"
-plt[2][4]="R"
-plt[5][5]="R" 
-plt[1][5]="R"
-plt[0][5]="R"
-
-
-print(len(territoire(plt, 2, 4, "R")))
-print(len(list(dict.fromkeys(territoire(plt, 2, 4, "R")))))
-
+##############
 ### Scores ###
+##############
+
 def score(plateau, couleur):
     pass
     
 
 
+################################
 ### Boucle de jeu principale ###
+################################
+
 def main():
-#   plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9, 9)
-    pass
+    plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9,9) #initialisation du jeu
+
+    jeu_finis = False #variable pour arreter la boucle
+    joueur = "Blanc"  # les blancs commencent (comme les echecs, mais on peut changer si c'est raciste x) )
+    action_pre = ""   #variable qui me permet de modifer jeu_finis et d'arreter le jeu si les deux joueurs passent à la suite
+    pion_R = 0        #compteur de pion rouge
+    pion_B = 0          #compteur de pion blanc
+    
+    while jeu_finis == False:   #boucle du jeu
+        if joueur == "Rouge":
+            couleur = "Rouge"   #pour qu'a chaque tour, on associe la main et la couleur du bon joueur
+            main = mr
+        if joueur == "Blanc":
+            couleur = "Blanc"
+            main = mb
+
+        afficher_jeu(plt, lr, cr, mr, mb)   #on affiche l'état du jeu
+        for carte in main:
+            mouvement_possible(plt, lr, cr, carte)
+        main_jouable(plt, lr, cr, main)     #retourne mj qui permet de savoir si une carte est jouable pour la fonction demande_action
+
+        action = demande_action(couleur, plt, lr, cr, main)#return soit passe, soit pioche, soit une carte jouable
+
+###a ajouter: si pioche vide ? fin de la partie ? remelange de la defausse ?
+
+        if action == "pioche":  #si on pioche, on prend la 1re carte de la pioche
+            main.append(pioche[0])
+            pioche.remove(pioche[0])
+            action_pre = "pioche"   #ce tour la, le joueur a piocher
+
+        if action == "passe":   #si on passe
+            if action_pre == "passe":   #si passe par les deux joueurs a la suite, fin de la game
+                jeu_finis = True
+            action_pre = "passe"    
+
+# Transformer le if action in main en else ? 
+        if action in main: #si l'action est une carte de la main et est jouable: 
+            plt, lr, cr, mr, mb, defausse = bouge_le_roi(plt, lr,cr, mr, mb, defausse, action, couleur) #nouvelle valeur des différentes variables
+            action_pre = "carte"    #ce tour la, le joueur a jouer
+            for i in plt:
+                if i == "R":
+                    pion_R += 1
+                if i == "B":
+                    pion_B += 1
+            if pion_R == 26 or pion_B == 26:       #compteur, on a que 26 pions dans une partie (cf regle)
+                jeu_finis = True
+            
+        if joueur == "Blanc":   #permet de changer de joueur a chaque fin de tour
+            joueur = "Rouge"
+        else:
+            joueur = "Blanc"
+    
+    #si on sort de la boucle de jeu:
+
+    sb = score(plt, "Blanc")
+    sr = score(plt, "Rouge")
+    print(f"Rouge: {sr}")
+    print(f"Blanc: {sb}")       #on afficher les scores
+    if sr > sb :
+        print("Rouge a gagné la partie")        #on affiche le gagnant
+    if sr < sb :
+        print("Blanc a gagné la partie")
+    else:
+        print("Egalité")
+
+if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
+    main()

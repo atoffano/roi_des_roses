@@ -15,7 +15,7 @@ def test_init_jeu(nb_lignes, nb_colonnes):
         return "init_jeu n'a pas passé le test: Plateau non conforme"
 
 # Vérifie que les dimensions données pour former le plateau sont bien conformes.
-    if nb_colonnes != nb_lignes or nb_lignes % 2 == 0: 
+    if nb_colonnes != nb_lignes or nb_lignes % 2 == 0 or nb_lignes < 3: 
         return "init_jeu n'a pas passé le test: Dimensions du plateau non conformes"
 
 # Vérifie que le roi est bien dans la case centrale
