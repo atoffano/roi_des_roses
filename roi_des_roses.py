@@ -32,6 +32,7 @@ def afficher_main(couleur, main):
     for i in range(len(main)-1):
         main_a_afficher += main[i] + " "
     main_a_afficher += main[-1]
+    print(main_a_afficher)
 
 def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
     afficher_main("Rouge", main_r)
