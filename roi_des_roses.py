@@ -29,9 +29,10 @@ def init_jeu(nb_lignes, nb_colonnes):
 # Affiche la main du joueur de la couleur renseignée
 def afficher_main(couleur, main):
     main_a_afficher = couleur + " : "
-    for i in range(len(main)-1):
-        main_a_afficher += main[i] + " "
-    main_a_afficher += main[-1]
+    if main != []:
+        for i in range(len(main)-1):
+            main_a_afficher += main[i] + " "
+        main_a_afficher += main[-1]
     print(main_a_afficher)
 
 def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
@@ -56,13 +57,6 @@ def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
         print ("|")
     print("-"*46)
 
-#modif *46
-plt , lr, cr, mr, mb, pioche , defausse = init_jeu(9, 9)
-afficher_jeu(plt , lr, cr, mr, mb)
-
-
-
-
 #################################
 ### Mouvement du roi possible ###
 #################################
@@ -79,13 +73,10 @@ def mouvement_possible(plateau, l_roi, c_roi, carte):
             new_l_roi += dist_parcourue
         else:
             new_c_roi -= dist_parcourue
-
-    if plateau[new_l_roi][new_c_roi] != ".": # On vérifie que la case d'arrivée est bien vide
-        return False
-
-    if 0 <= new_l_roi <= len(plateau) and 0 <= new_c_roi <= len(plateau): # On vérifie finalement  que la position finale n'est pas hors du plateau
-        return True # Si toutes les conditions sont validées, le mouvement est possible !
-    return False 
+ # On vérifie que la position finale n'est pas hors du plateau, et qu'elle n'est pas occupée.
+    if 0 <= new_l_roi < len(plateau) and 0 <= new_c_roi < len(plateau) and plateau[new_l_roi][new_c_roi] == ".":
+        return True
+    return False
 
 ####################
 ### Main jouable ###
@@ -134,13 +125,13 @@ def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur
         else:
             new_c_roi -= dist_parcourue
     if couleur == "Rouge":
-        plateau[l_roi][c_roi] = "R"     #on pose un pion de la bonne couleur
+        plateau[new_l_roi][new_c_roi] = "R"     #on pose un pion de la bonne couleur
         main_r.remove(carte)            #on supprime la carte de la main du joueur
     else:
-        plateau[l_roi][c_roi] = "B"
+        plateau[new_l_roi][new_c_roi] = "B"
         main_b.remove(carte)
     defausse.append(carte)              #on ajoute cette carte à la defausse
-    return (plateau, l_roi, c_roi, main_r, main_b, defausse)
+    return (plateau, new_l_roi, new_c_roi, main_r, main_b, defausse)
 
 ##################################
 ### Definition des territoires ###
@@ -192,14 +183,13 @@ def score(plateau, couleur):
 
 def main():
     plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9,9) #initialisation du jeu
-
-    jeu_finis = False #variable pour arreter la boucle
+    jeu_fini = False #variable pour arreter la boucle
     joueur = "Blanc"  # les blancs commencent (comme les echecs, mais on peut changer si c'est raciste x) )
-    action_pre = ""   #variable qui me permet de modifer jeu_finis et d'arreter le jeu si les deux joueurs passent à la suite
+    action_pre = ""   #variable qui me permet de modifer jeu_fini et d'arreter le jeu si les deux joueurs passent à la suite
     pion_R = 0        #compteur de pion rouge
     pion_B = 0          #compteur de pion blanc
     
-    while jeu_finis == False:   #boucle du jeu
+    while jeu_fini == False:   #boucle du jeu
         if joueur == "Rouge":
             couleur = "Rouge"   #pour qu'a chaque tour, on associe la main et la couleur du bon joueur
             main = mr
@@ -208,53 +198,52 @@ def main():
             main = mb
 
         afficher_jeu(plt, lr, cr, mr, mb)   #on affiche l'état du jeu
-        for carte in main:
-            mouvement_possible(plt, lr, cr, carte)
-        main_jouable(plt, lr, cr, main)     #retourne mj qui permet de savoir si une carte est jouable pour la fonction demande_action
 
         action = demande_action(couleur, plt, lr, cr, main)#return soit passe, soit pioche, soit une carte jouable
 
 ###a ajouter: si pioche vide ? fin de la partie ? remelange de la defausse ?
 
-        if action == "pioche":  #si on pioche, on prend la 1re carte de la pioche
-            main.append(pioche[0])
+    # Si le joueur pioche:
+        if action == "pioche": 
+            if pioche == []: # Si la pioche est vide, on mélange la défausse avant de la remettre dans la pioche.
+                random.shuffle(defausse)
+                pioche = defausse
+                defausse = []
+            main.append(pioche[0]) # On la transfère la première carte de la pioche à la main du joueur
             pioche.remove(pioche[0])
-            action_pre = "pioche"   #ce tour la, le joueur a piocher
-
-        if action == "passe":   #si on passe
-            if action_pre == "passe":   #si passe par les deux joueurs a la suite, fin de la game
-                jeu_finis = True
+            action_pre = "pioche"   # On note que ce tour la, le joueur a pioché.
+    # Si le joueur passe:
+        elif action == "passe":
+            if action_pre == "passe":   # Si les deux joueurs passent à la suite, la partie prend fin à ce tour.
+                jeu_fini = True
             action_pre = "passe"    
-
-# Transformer le if action in main en else ? 
-        if action in main: #si l'action est une carte de la main et est jouable: 
-            plt, lr, cr, mr, mb, defausse = bouge_le_roi(plt, lr,cr, mr, mb, defausse, action, couleur) #nouvelle valeur des différentes variables
-            action_pre = "carte"    #ce tour la, le joueur a jouer
-            for i in plt:
-                if i == "R":
-                    pion_R += 1
-                if i == "B":
-                    pion_B += 1
-            if pion_R == 26 or pion_B == 26:       #compteur, on a que 26 pions dans une partie (cf regle)
-                jeu_finis = True
-            
+    # L'action est une carte: 
+        else: 
+            plt, lr, cr, mr, mb, defausse = bouge_le_roi(plt, lr,cr, mr, mb, defausse, action, couleur) # On fait bouger le roi et on update le jeu en fonction
+            action_pre = "carte"    #ce tour la, le joueur a joué
+            if joueur == "Blanc":
+                pion_B += 1
+            else :
+                pion_R += 1
+            if pion_R == 26 or pion_B == 26:       # Permet d'arrêter la partie quand tous les pions  d'une couleur ont été joués.
+                jeu_fini = True
         if joueur == "Blanc":   #permet de changer de joueur a chaque fin de tour
             joueur = "Rouge"
         else:
             joueur = "Blanc"
-    
-    #si on sort de la boucle de jeu:
-
+    # Si on sort de la boucle de jeu:
     sb = score(plt, "Blanc")
     sr = score(plt, "Rouge")
     print(f"Rouge: {sr}")
-    print(f"Blanc: {sb}")       #on afficher les scores
+    print(f"Blanc: {sb}")       # On affiche les scores
     if sr > sb :
-        print("Rouge a gagné la partie")        #on affiche le gagnant
-    if sr < sb :
+        print("Rouge a gagné la partie")        # On affiche le gagnant
+    elif sr < sb :
         print("Blanc a gagné la partie")
     else:
         print("Egalité")
 
 if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
     main()
+
+# TODO : scores(), tests
