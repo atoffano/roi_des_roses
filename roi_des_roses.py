@@ -173,9 +173,19 @@ def check_voisins(plateau, ligne, colonne, couleur):
 ##############
 
 def score(plateau, couleur):
-    pass
-    
-
+    score = 0
+    somme_territoires = []
+    to_check =  [(i,j) for i in range(len(plateau)) for j in range(len(plateau))]
+    while to_check != []:
+        ligne = to_check[0][0]
+        col = to_check[0][1]
+        territoire_case = territoire(plateau, ligne, col, couleur)
+        somme_territoires += territoire_case
+        for case in territoire_case:
+            if case in to_check:
+                to_check.remove(case)
+    for zone in somme_territoires:
+        score += len(zone)**2
 
 ################################
 ### Boucle de jeu principale ###
