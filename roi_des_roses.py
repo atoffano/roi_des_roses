@@ -13,7 +13,6 @@ def init_jeu(nb_lignes, nb_colonnes):
     main_b = []
     main_r = []
     defausse = []
-
     random.shuffle(pioche) # On mélange la pioche
     main_r = pioche[0:5] # On distribue les 5 premières cartes au joueur rouge..
     main_b = pioche[5:10] # ..Et les 5 suivantes au joueur blanc
