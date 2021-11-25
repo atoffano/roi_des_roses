@@ -9,6 +9,13 @@ def test_init_jeu():
     assert len(pioche) == 14, "Pioche de la mauvaise taille"
     assert mb not in pioche and mr not in pioche and mr not in mb, "Duplication de carte"
     assert defausse == [], "La défausse doit être une liste vide"
+    mr_1 = mr
+    mb_1 = mb
+    plt, lr, cr, mr, mb, pioche, defausse = rr.init_jeu(7, 7)
+    assert mb != mb_1 and mr_1 != mr, " Il faudrait distribuer les cartes de manière aléatoire entre les parties.."
+    
+
+
 
 def test_afficher_main(couleur, main):
     
