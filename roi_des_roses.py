@@ -210,8 +210,6 @@ def main():
 
         action = demande_action(couleur, plt, lr, cr, main)#return soit passe, soit pioche, soit une carte jouable
 
-###a ajouter: si pioche vide ? fin de la partie ? remelange de la defausse ?
-
     # Si le joueur pioche:
         if action == "pioche": 
             if pioche == []: # Si la pioche est vide, on mélange la défausse avant de la remettre dans la pioche.
@@ -243,8 +241,8 @@ def main():
     # Si on sort de la boucle de jeu:
     sb = score(plt, "Blanc")
     sr = score(plt, "Rouge")
+    print(f"Blanc: {sb}")   # On affiche les scores
     print(f"Rouge: {sr}")
-    print(f"Blanc: {sb}")       # On affiche les scores
     if sr > sb :
         print("Rouge a gagné la partie")        # On affiche le gagnant
     elif sr < sb :
@@ -254,5 +252,3 @@ def main():
 
 if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
     main()
-
-# TODO : scores(), tests
