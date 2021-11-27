@@ -97,7 +97,7 @@ def demande_action(couleur, plateau, l_roi, c_roi, main):
 # On demande une action et on teste sa validité. On recommence jusqu'à ce que le joueur donne une action valide
     while True: 
         action = input()
-        if action == "passe" and main_jouable(plateau, l_roi, c_roi, main) == []:
+        if action == "passe" and main_jouable(plateau, l_roi, c_roi, main) == [] and len(main) == 5:
             return action
         if action == "pioche" and len(main) < 5: # On vérifie que la main n'est pas pleine si le joueur choisit de piocher.
             return action
@@ -193,7 +193,7 @@ def score(plateau, couleur):
 def main():
     plt, lr, cr, mr, mb, pioche, defausse = init_jeu(9,9) #initialisation du jeu
     jeu_fini = False #variable pour arreter la boucle
-    joueur = "Blanc"  # les blancs commencent (comme les echecs, mais on peut changer si c'est raciste x) )
+    joueur = "Rouge"  # les rouges commencent (cf regle)
     action_pre = ""   #variable qui me permet de modifer jeu_fini et d'arreter le jeu si les deux joueurs passent à la suite
     pion_R = 0        #compteur de pion rouge
     pion_B = 0          #compteur de pion blanc
