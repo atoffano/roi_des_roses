@@ -39,8 +39,8 @@ def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
     afficher_main("Blanc", main_b)
 
     for i in range(len(plateau)):
-        print("-"*46)
-        for j in range(len(plateau[0])) :
+        print("-" * 6 + "-" * 5 *(len(plateau)-1))
+        for j in range(len(plateau)) :
             car = ""
             if l_roi == i and c_roi == j:
                 car = "X"
@@ -54,7 +54,7 @@ def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
                 car = car + " "
             print(f"| {car} ",end="")
         print ("|")
-    print("-"*46)
+    print("-" * 6 + "-" * 5 *(len(plateau)-1))
 
 #################################
 ### Mouvement du roi possible ###
