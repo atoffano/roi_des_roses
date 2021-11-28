@@ -21,6 +21,7 @@ faux_c_roi = 2
 faux_deck = ["N1","NE1","E1","SE1","S1","SO1","O1","NO1","N2","NE2","E2","SE2","S2","SO2","O2","NO2","N3","NE3","E3","SE3","S3","SO3","O3","NO3"]
 fausse_main_rouge = ["S1","SO1","O1"]
 fausse_main_blanc = ["SE1","NE2","N3","E2"]
+fausse_defausse = []
 
 def test_afficher_main(capsys):
 #Test d'affichage d'une main vide
@@ -77,14 +78,80 @@ def test_main_jouable():
         assert len(main_jouable_2) == 6, "Des cartes jouables n'ont pas été retournées"
         assert carte in ['N1', 'NE1', 'E1', 'SE1', 'SO2', 'S3'], "Une carte injouable a été retournée"
 
-# def test_demande_action(couleur, plateau, l_roi, c_roi, main):
-#     pass
+# def call_boucle_inf():
+#     stuck = True
+#     assert stuck == False, "Fonction bloquée dans une boucle infinie"
 
-# def test_bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
-#     pass
+# def test_demande_action(monkeypatch, capsys):
+#     from threading import Timer
+#     timeout = 1
+#     t = Timer(timeout, call_boucle_inf)
+#     t.start()
+#     monkeypatch.setattr('builtins.input', lambda: "pioche")
+#     assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, []) == "pioche", "Expected 'pioche' got something else in return"
+#     t.cancel()
+#     t.join()
+    # t = Timer(timeout, call_boucle_inf)
+    # t.start()
+    # for carte in fausse_main_blanc:
+    #     if carte != "NE2": # On traite la seule carte injouable de la main séparément.
+    #         monkeypatch.setattr('builtins.input', lambda: carte)
+    #         assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["SO1","O1","NO1","N2","NE2"]) == carte, "La fonction ne renvoie pas la carte jouée!"
+    #     elif carte == "NE2":
+    #         monkeypatch.setattr('builtins.input', lambda: carte)
+    #         assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["SO1","O1","NO1","N2","NE2"]) == carte, "La fonction renvoie une carte injouable!"
+    # t.cancel()
+    # t.join()
+    # t = Timer(timeout, call_boucle_inf)
+    # t.start()
+    # monkeypatch.setattr('builtins.input', lambda: "N1")
+    # assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"]) == "N1", "La fonction renvoie une carte malgré une carte injouable"
+    # t.cancel()
+    # t.join()
+    # t = Timer(timeout, call_boucle_inf)
+    # t.start()
+    # monkeypatch.setattr('builtins.input', lambda: "passe")
+    # assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"]) == "passe", "La fonction ne passe pas !"
+    # t.cancel()
 
-# def test_territoire(plateau, ligne, colonne, couleur):
-#     pass
+def calc_pos_arrivee(faux_l_roi, faux_c_roi, carte):
+    true_l_roi = faux_l_roi
+    true_c_roi = faux_c_roi
+    dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
+    for i in range(len(carte)-1):  # On calcule les coordonnées d'arrivée du roi en fonction du/des vecteurs (N, E, S, O) associés à la carte
+        if carte[i] == 'N':
+            true_l_roi -= dist_parcourue
+        elif carte[i] == 'E':
+            true_c_roi += dist_parcourue        
+        elif carte[i] == 'S':
+            true_l_roi += dist_parcourue
+        else:
+            true_c_roi -= dist_parcourue
+    return true_l_roi, true_c_roi
+    
+def test_bouge_le_roi():
+    for main_joueurs in [fausse_main_rouge, fausse_main_blanc]:
+        for carte in main_joueurs:
+            plateau, new_l_roi, new_c_roi, main_r, main_b, defausse = rr.bouge_le_roi(faux_plateau, faux_l_roi, faux_c_roi, main_joueurs, [], fausse_defausse, carte, "Rouge")
+            true_l_roi, true_c_roi = calc_pos_arrivee(faux_l_roi, faux_c_roi, carte)
+            assert true_l_roi == new_l_roi, "Ligne d'arrivée du roi mal calculée"
+            assert true_c_roi == new_c_roi, "Colonne d'arrivée du roi mal calculée"
+            assert plateau[new_l_roi][new_c_roi] == "R", "Case d'arrivée du roi mal annotée sur le plateau"
+            assert carte not in main_r, "Carte jouée non supprimée de la main"
+            assert carte in defausse, "La carte jouée n'est pas arrivée dans la défausse"
+# def test_territoire():
+#     assert rr.territoire(faux_plateau, 0, 0, "Rouge") == [], "Un territoire != [] a été retourné pour une case vide"
+#     assert rr.territoire(faux_plateau, 2, 1, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
+#     assert rr.territoire(faux_plateau, 1, 6, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
+print(rr.territoire(faux_plateau, 1, 6, "Blanc"))
+print(faux_plateau[1][3])
+print(faux_plateau[1][4])
+print(faux_plateau[1][5])
+print(faux_plateau[1][6])
+print('lui')
+print(faux_plateau[1][7])
+print(faux_plateau[1][8])
+
 
 # def test_check_voisins(plateau, ligne, colonne, couleur):
 #     pass
