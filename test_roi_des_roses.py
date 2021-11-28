@@ -66,12 +66,6 @@ def test_mouvement_possible():
 
     for carte, jouabilite in mvmnt_pos_output_2.items(): # ..Pour la position 2
         assert jouabilite == coup_valide_2[carte], "Le Roi ne doit pas pouvoir sortir du plateau!" if carte in out_of_bound_2 else "Le Roi ne peut arriver sur un pion !"
-a = []
-coup_valide_2 = {'N1': True, 'NE1': True, 'E1': True, 'SE1': True, 'S1': False, 'SO1': False, 'O1': False, 'NO1': False, 'N2': False, 'NE2': False, 'E2': False, 'SE2': False, 'S2': False, 'SO2': True, 'O2': False, 'NO2': False, 'N3': False, 'NE3': False, 'E3': False, 'SE3': False, 'S3': True, 'SO3': False, 'O3': False, 'NO3': False}
-for carte in coup_valide_2:
-    if coup_valide_2[carte] == True:
-        a.append(carte)
-print(a)
 
 def test_main_jouable():
     main_jouable_1 = rr.main_jouable(faux_plateau, faux_l_roi, faux_c_roi, faux_deck)
