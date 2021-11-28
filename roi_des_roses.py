@@ -180,12 +180,15 @@ def score(plateau, couleur):
         ligne = to_check[0][0]
         col = to_check[0][1]
         territoire_case = territoire(plateau, ligne, col, couleur)
-        somme_territoires += territoire_case
+        if territoire_case != []:
+            somme_territoires.append(territoire_case)
         for case in territoire_case:
-            if case in to_check:
+            if case in to_check and case != to_check[0]:
                 to_check.remove(case)
+        to_check.remove(to_check[0])
     for zone in somme_territoires:
         score += len(zone)**2
+    return score
 
 ################################
 ### Boucle de jeu principale ###

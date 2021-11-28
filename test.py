@@ -1,10 +1,27 @@
+import time
+def score(plateau, couleur):
+    score = 0
+    somme_territoires = []
+    to_check =  [(i,j) for i in range(len(plateau)) for j in range(len(plateau))]
+    while to_check != []:
+        ligne = to_check[0][0]
+        col = to_check[0][1]
+        territoire_case = territoire(plateau, ligne, col, couleur)
+        if territoire_case != []:
+            somme_territoires.append(territoire_case)
+        for case in territoire_case:
+            if case in to_check and case != to_check[0]:
+                to_check.remove(case)
+        to_check.remove(to_check[0])
+    for zone in somme_territoires:
+        score += len(zone)**2
+    return score
+
 def territoire(plateau, ligne, colonne, couleur):
     territoire = []
     couleur = "R" if couleur == "Rouge" else "B"
     if plateau[ligne][colonne] == couleur: # Si la case est de la bonne couleur, on ajoute ses coordonnées à la liste des territoires.
-        print('Test couleur passé')
         territoire.append([ligne, colonne])
-        print('territoire ajouté')
         territoire_voisins = check_voisins(plateau, ligne, colonne, couleur) # On regarde si cette case possède des voisins de même couleur.
         while territoire_voisins != []: # Tant qu'il ne reste pas de cases voisines de la même couleur (i.e que le bord du territoire n'a pas été atteint):
             for voisin in territoire_voisins: # Pour chaque case de la même couleur voisine de notre case:
@@ -17,9 +34,7 @@ def territoire(plateau, ligne, colonne, couleur):
         for case in territoire:
             a_renvoyer.append(tuple(case))
         return a_renvoyer
-    else:
-        print('notpe')
-        return [] # Si la case d'origine n'est pas de la bonne couleur, on renvoie une liste vide.
+    return [] # Si la case d'origine n'est pas de la bonne couleur, on renvoie une liste vide.
 
 # Fonction enregistrant les coordonnées des voisins nord, sud, est et ouest d'une case fournie si elles sont de la même couleur et renvoyant leur coordonnées.
 def check_voisins(plateau, ligne, colonne, couleur):
@@ -35,4 +50,7 @@ def check_voisins(plateau, ligne, colonne, couleur):
     return voisins
 
 faux_plateau = [['.', '.', '.', '.', '.', 'B', 'B', '.', '.'], ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'], ['.', 'R', '.', '.', 'B', 'B', 'R', 'B', '.'], ['.', '.', '.', '.', '.', '.', '.', 'B', '.'], ['.', '.', '.', '.', 'R', '.', 'R', '.', 'B'], ['.', '.', '.', '.', 'R', '.', 'B', 'R', 'B'], ['.', '.', '.', '.', '.', '.', '.', 'B', 'R'], ['.', '.', '.', '.', '.', 'R', '.', '.', '.'], ['.', '.', '.', '.', '.', '.', '.', 'R', 'B']]
-print(len(territoire(faux_plateau, 1, 5, 'Rouge')[0]))
+
+print(score(faux_plateau, "Rouge"))
+
+print(score(faux_plateau, "Blanc"))
