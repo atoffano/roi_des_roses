@@ -66,10 +66,22 @@ def test_mouvement_possible():
 
     for carte, jouabilite in mvmnt_pos_output_2.items(): # ..Pour la position 2
         assert jouabilite == coup_valide_2[carte], "Le Roi ne doit pas pouvoir sortir du plateau!" if carte in out_of_bound_2 else "Le Roi ne peut arriver sur un pion !"
+a = []
+coup_valide_2 = {'N1': True, 'NE1': True, 'E1': True, 'SE1': True, 'S1': False, 'SO1': False, 'O1': False, 'NO1': False, 'N2': False, 'NE2': False, 'E2': False, 'SE2': False, 'S2': False, 'SO2': True, 'O2': False, 'NO2': False, 'N3': False, 'NE3': False, 'E3': False, 'SE3': False, 'S3': True, 'SO3': False, 'O3': False, 'NO3': False}
+for carte in coup_valide_2:
+    if coup_valide_2[carte] == True:
+        a.append(carte)
+print(a)
 
-
-# def test_main_jouable(plateau, l_roi, c_roi, main):
-#     pass
+def test_main_jouable():
+    main_jouable_1 = rr.main_jouable(faux_plateau, faux_l_roi, faux_c_roi, faux_deck)
+    main_jouable_2 = rr.main_jouable(faux_plateau, 1, 7, faux_deck)
+    for carte in main_jouable_1:
+        assert len(main_jouable_1) == 17, "Des cartes jouables n'ont pas été retournées"
+        assert carte in ['N1', 'NE1', 'E1', 'SE1', 'S1', 'SO1', 'O1', 'N2', 'E2', 'S2', 'SO2', 'O2', 'NO2', 'N3', 'E3', 'SE3', 'S3'], "Une carte injouable a été retournée"
+    for carte in main_jouable_2:
+        assert len(main_jouable_2) == 6, "Des cartes jouables n'ont pas été retournées"
+        assert carte in ['N1', 'NE1', 'E1', 'SE1', 'SO2', 'S3'], "Une carte injouable a été retournée"
 
 # def test_demande_action(couleur, plateau, l_roi, c_roi, main):
 #     pass
