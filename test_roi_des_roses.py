@@ -139,19 +139,15 @@ def test_bouge_le_roi():
             assert plateau[new_l_roi][new_c_roi] == "R", "Case d'arrivée du roi mal annotée sur le plateau"
             assert carte not in main_r, "Carte jouée non supprimée de la main"
             assert carte in defausse, "La carte jouée n'est pas arrivée dans la défausse"
-# def test_territoire():
-#     assert rr.territoire(faux_plateau, 0, 0, "Rouge") == [], "Un territoire != [] a été retourné pour une case vide"
-#     assert rr.territoire(faux_plateau, 2, 1, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
-#     assert rr.territoire(faux_plateau, 1, 6, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
-print(rr.territoire(faux_plateau, 1, 6, "Blanc"))
-print(faux_plateau[1][3])
-print(faux_plateau[1][4])
-print(faux_plateau[1][5])
-print(faux_plateau[1][6])
-print('lui')
-print(faux_plateau[1][7])
-print(faux_plateau[1][8])
 
+def test_territoire():
+    assert type(rr.territoire(faux_plateau, 0, 0, "Rouge")) == list, "Le territoire retourné doit être une liste !"
+    assert rr.territoire(faux_plateau, 0, 0, "Rouge") == [], "Un territoire != [] a été retourné pour une case vide"
+    assert rr.territoire(faux_plateau, 2, 1, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
+    terr = rr.territoire(faux_plateau, 1, 6, "Blanc")
+    assert type(terr[0]) == tuple and len(terr[0]) == 2, "Format du territoire renvoyé incorrect. Le territoire est bien une liste mais les cases doivent être sous forme de tuple de type (ligne, colonne)!"
+    assert terr == [(1, 6), (0, 6), (0, 5)], "Territoire mal déterminé."
+    assert rr.territoire(faux_plateau, 1, 5, "Rouge") == [(1, 5), (1, 4)], "Territoire mal déterminé"
 
 # def test_check_voisins(plateau, ligne, colonne, couleur):
 #     pass

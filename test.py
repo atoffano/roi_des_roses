@@ -1,6 +1,6 @@
 def territoire(plateau, ligne, colonne, couleur):
     territoire = []
-    couleur = "B" if couleur == "Rouge" else "B"
+    couleur = "R" if couleur == "Rouge" else "B"
     if plateau[ligne][colonne] == couleur: # Si la case est de la bonne couleur, on ajoute ses coordonnées à la liste des territoires.
         print('Test couleur passé')
         territoire.append([ligne, colonne])
@@ -35,4 +35,4 @@ def check_voisins(plateau, ligne, colonne, couleur):
     return voisins
 
 faux_plateau = [['.', '.', '.', '.', '.', 'B', 'B', '.', '.'], ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'], ['.', 'R', '.', '.', 'B', 'B', 'R', 'B', '.'], ['.', '.', '.', '.', '.', '.', '.', 'B', '.'], ['.', '.', '.', '.', 'R', '.', 'R', '.', 'B'], ['.', '.', '.', '.', 'R', '.', 'B', 'R', 'B'], ['.', '.', '.', '.', '.', '.', '.', 'B', 'R'], ['.', '.', '.', '.', '.', 'R', '.', '.', '.'], ['.', '.', '.', '.', '.', '.', '.', 'R', 'B']]
-print(territoire(faux_plateau, 1, 6, 'Blanc'))
+print(len(territoire(faux_plateau, 1, 5, 'Rouge')[0]))

@@ -138,7 +138,7 @@ def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur
 
 def territoire(plateau, ligne, colonne, couleur):
     territoire = []
-    couleur = "B" if couleur == "Rouge" else "B"
+    couleur = "R" if couleur == "Rouge" else "B"
     if plateau[ligne][colonne] == couleur: # Si la case est de la bonne couleur, on ajoute ses coordonnées à la liste des territoires.
         territoire.append([ligne, colonne])
         territoire_voisins = check_voisins(plateau, ligne, colonne, couleur) # On regarde si cette case possède des voisins de même couleur.
