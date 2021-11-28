@@ -148,11 +148,11 @@ def test_territoire():
     assert type(terr[0]) == tuple and len(terr[0]) == 2, "Format du territoire renvoyé incorrect. Le territoire est bien une liste mais les cases doivent être sous forme de tuple de type (ligne, colonne)!"
     assert terr == [(1, 6), (0, 6), (0, 5)], "Territoire mal déterminé."
     assert rr.territoire(faux_plateau, 1, 5, "Rouge") == [(1, 5), (1, 4)], "Territoire mal déterminé"
-print(rr.score(faux_plateau, "Blanc"))
-print(rr.score(faux_plateau, "Rouge"))
 
-# def test_score():
-#     assert rr.score(faux_plateau, "Blanc")
+def test_score():
+    assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
+    assert rr.score(faux_plateau, "Rouge") == 15, "Score mal calculé pour les Rouges"
+
 
 # def test_main():
 #     pass

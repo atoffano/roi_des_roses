@@ -1,4 +1,3 @@
-import time
 def score(plateau, couleur):
     score = 0
     somme_territoires = []
@@ -52,5 +51,4 @@ def check_voisins(plateau, ligne, colonne, couleur):
 faux_plateau = [['.', '.', '.', '.', '.', 'B', 'B', '.', '.'], ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'], ['.', 'R', '.', '.', 'B', 'B', 'R', 'B', '.'], ['.', '.', '.', '.', '.', '.', '.', 'B', '.'], ['.', '.', '.', '.', 'R', '.', 'R', '.', 'B'], ['.', '.', '.', '.', 'R', '.', 'B', 'R', 'B'], ['.', '.', '.', '.', '.', '.', '.', 'B', 'R'], ['.', '.', '.', '.', '.', 'R', '.', '.', '.'], ['.', '.', '.', '.', '.', '.', '.', 'R', 'B']]
 
 print(score(faux_plateau, "Rouge"))
-
 print(score(faux_plateau, "Blanc"))
