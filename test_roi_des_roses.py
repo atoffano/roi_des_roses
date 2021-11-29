@@ -15,7 +15,16 @@ def test_init_jeu():
     plt, lr, cr, mr, mb, pioche, defausse = rr.init_jeu(7, 7)
     assert mb != mb_1 and mr_1 != mr, " Il faudrait distribuer les cartes de manière aléatoire entre les parties.."
 
-faux_plateau = [['.', '.', '.', '.', '.', 'B', 'B', '.', '.'], ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'], ['.', 'R', '.', '.', 'B', 'B', 'R', 'B', '.'], ['.', '.', '.', '.', '.', '.', '.', 'B', '.'], ['.', '.', '.', '.', 'R', '.', 'R', '.', 'B'], ['.', '.', '.', '.', 'R', '.', 'B', 'R', 'B'], ['.', '.', '.', '.', '.', '.', '.', 'B', 'R'], ['.', '.', '.', '.', '.', 'R', '.', '.', '.'], ['.', '.', '.', '.', '.', '.', '.', 'R', 'B']]
+faux_plateau = [
+    ['.', '.', '.', '.', '.', 'B', 'B', '.', '.'],
+    ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'],
+    ['.', 'R', '.', '.', 'B', 'B', 'R', 'B', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', 'B', '.'],
+    ['.', '.', '.', '.', 'R', '.', 'R', '.', 'B'],
+    ['.', '.', '.', '.', 'R', '.', 'B', 'R', 'B'],
+    ['.', '.', '.', '.', '.', '.', '.', 'B', 'R'],
+    ['.', '.', '.', '.', '.', 'R', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', 'R', 'B']]
 faux_l_roi = 3
 faux_c_roi = 2
 faux_deck = ["N1","NE1","E1","SE1","S1","SO1","O1","NO1","N2","NE2","E2","SE2","S2","SO2","O2","NO2","N3","NE3","E3","SE3","S3","SO3","O3","NO3"]
@@ -149,9 +158,10 @@ def test_territoire():
     assert terr == [(1, 6), (0, 6), (0, 5)], "Territoire mal déterminé."
     assert rr.territoire(faux_plateau, 1, 5, "Rouge") == [(1, 5), (1, 4)], "Territoire mal déterminé"
 
+print(rr.score(faux_plateau, "Rouge"))
 def test_score():
-    assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
     assert rr.score(faux_plateau, "Rouge") == 15, "Score mal calculé pour les Rouges"
+    assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
 
 
 # def test_main():
