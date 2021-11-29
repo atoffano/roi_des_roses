@@ -87,41 +87,24 @@ def test_main_jouable():
         assert len(main_jouable_2) == 6, "Des cartes jouables n'ont pas été retournées"
         assert carte in ['N1', 'NE1', 'E1', 'SE1', 'SO2', 'S3'], "Une carte injouable a été retournée"
 
-# def call_boucle_inf():
-#     stuck = True
-#     assert stuck == False, "Fonction bloquée dans une boucle infinie"
 
-# def test_demande_action(monkeypatch, capsys):
-#     from threading import Timer
-#     timeout = 1
-#     t = Timer(timeout, call_boucle_inf)
-#     t.start()
-#     monkeypatch.setattr('builtins.input', lambda: "pioche")
-#     assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, []) == "pioche", "Expected 'pioche' got something else in return"
-#     t.cancel()
-#     t.join()
-    # t = Timer(timeout, call_boucle_inf)
-    # t.start()
-    # for carte in fausse_main_blanc:
-    #     if carte != "NE2": # On traite la seule carte injouable de la main séparément.
-    #         monkeypatch.setattr('builtins.input', lambda: carte)
-    #         assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["SO1","O1","NO1","N2","NE2"]) == carte, "La fonction ne renvoie pas la carte jouée!"
-    #     elif carte == "NE2":
-    #         monkeypatch.setattr('builtins.input', lambda: carte)
-    #         assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["SO1","O1","NO1","N2","NE2"]) == carte, "La fonction renvoie une carte injouable!"
-    # t.cancel()
-    # t.join()
-    # t = Timer(timeout, call_boucle_inf)
-    # t.start()
-    # monkeypatch.setattr('builtins.input', lambda: "N1")
-    # assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"]) == "N1", "La fonction renvoie une carte malgré une carte injouable"
-    # t.cancel()
-    # t.join()
-    # t = Timer(timeout, call_boucle_inf)
-    # t.start()
-    # monkeypatch.setattr('builtins.input', lambda: "passe")
-    # assert rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"]) == "passe", "La fonction ne passe pas !"
-    # t.cancel()
+def call_boucle_inf():
+    stuck = True
+    assert stuck == False, "Fonction bloquée dans une boucle infinie"
+
+def test_demande_action(monkeypatch):
+    inputs = iter(["passe", "NE1", "pioche"])
+    monkeypatch.setattr('builtins.input', lambda msg: next(inputs))
+    result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, [])
+    assert result == "pioche", "La fonction ne retourne pas 'pioche' malgré une main vide"
+
+    inputs = iter(["NO1", "pioche", "passe"])
+    result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["NO1", "NO1", "NO1", "NO1", "NO1"])
+    assert result == "passe", "La fonction ne retourne pas 'passe' malgré une main injouable et une main pleine"
+
+    inputs = iter(["pioche", "passe", "N1"])
+    result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"])
+    assert result == "N1", "La fonction ne retourne pas la carte indiquée malgré une main pleine et une carte jouable."
 
 def calc_pos_arrivee(faux_l_roi, faux_c_roi, carte):
     true_l_roi = faux_l_roi
@@ -161,6 +144,3 @@ def test_territoire():
 def test_score():
     assert rr.score(faux_plateau, "Rouge") == 15, "Score mal calculé pour les Rouges"
     assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
-
-# def test_main():
-#     pass
