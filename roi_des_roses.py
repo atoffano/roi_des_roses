@@ -1,4 +1,5 @@
-import random    
+import random
+import copy 
 
 #############################
 ### Initialisation du jeu ###
@@ -111,6 +112,9 @@ def demande_action(couleur, plateau, l_roi, c_roi, main):
 ####################
 
 def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur):
+    plateau = copy.deepcopy(plateau)
+    main_r = copy.deepcopy(main_r)
+    main_b = copy.deepcopy(main_b)
     new_l_roi = l_roi
     new_c_roi = c_roi
     dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
@@ -138,6 +142,7 @@ def bouge_le_roi(plateau, l_roi, c_roi, main_r, main_b, defausse, carte, couleur
 
 def territoire(plateau, ligne, colonne, couleur):
     territoire = []
+    couleur = copy.deepcopy(couleur)
     couleur = "R" if couleur == "Rouge" else "B"
     if plateau[ligne][colonne] == couleur: # Si la case est de la bonne couleur, on ajoute ses coordonnées à la liste des territoires.
         territoire.append([ligne, colonne])

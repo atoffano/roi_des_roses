@@ -158,11 +158,9 @@ def test_territoire():
     assert terr == [(1, 6), (0, 6), (0, 5)], "Territoire mal déterminé."
     assert rr.territoire(faux_plateau, 1, 5, "Rouge") == [(1, 5), (1, 4)], "Territoire mal déterminé"
 
-print(rr.score(faux_plateau, "Rouge"))
 def test_score():
     assert rr.score(faux_plateau, "Rouge") == 15, "Score mal calculé pour les Rouges"
     assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
-
 
 # def test_main():
 #     pass
