@@ -15,6 +15,7 @@ def test_init_jeu():
     plt, lr, cr, mr, mb, pioche, defausse = rr.init_jeu(7, 7)
     assert mb != mb_1 and mr_1 != mr, " Il faudrait distribuer les cartes de manière aléatoire entre les parties.."
 
+# Variables créant un état spécifique de jeu servant à tester nos différentes fonctions par la suite.
 faux_plateau = [
     ['.', '.', '.', '.', '.', 'B', 'B', '.', '.'],
     ['.', '.', '.', '.', 'R', 'R', 'B', '.', '.'],
@@ -48,10 +49,11 @@ def test_afficher_main(capsys):
 
 def test_afficher_jeu(capsys):
     rr.afficher_jeu(faux_plateau, faux_l_roi, faux_c_roi, fausse_main_rouge, fausse_main_blanc)
-    out, err = capsys.readouterr()
+    out, err = capsys.readouterr() # Permet d'enregistrer un affichage dans la console
+    # On vérifie (de manière particulièrement dégueulasse) que l'affichage est valide.
     assert "Rouge : S1 SO1 O1\nBlanc : SE1 NE2 N3 E2\n"in out, "Erreur d'affichage des main"
     assert "Rouge : S1 SO1 O1\nBlanc : SE1 NE2 N3 E2\n----------------------------------------------\n|    |    |    |    |    |  B |  B |    |    |\n----------------------------------------------\n|    |    |    |    |  R |  R |  B |    |    |\n----------------------------------------------\n|    |  R |    |    |  B |  B |  R |  B |    |\n----------------------------------------------\n|    |    | X  |    |    |    |    |  B |    |\n----------------------------------------------\n|    |    |    |    |  R |    |  R |    |  B |\n----------------------------------------------\n|    |    |    |    |  R |    |  B |  R |  B |\n----------------------------------------------\n|    |    |    |    |    |    |    |  B |  R |\n----------------------------------------------\n|    |    |    |    |    |  R |    |    |    |\n----------------------------------------------\n|    |    |    |    |    |    |    |  R |  B |\n----------------------------------------------\n" in out, "Erreur d'affichage du plateau"
-    
+
 def test_mouvement_possible():
 # Dictionnaires contenant l'output de la fonction mouvement_possible() à tester et les cartes associées.
     mvmnt_pos_output_1 = {}
@@ -78,34 +80,34 @@ def test_mouvement_possible():
         assert jouabilite == coup_valide_2[carte], "Le Roi ne doit pas pouvoir sortir du plateau!" if carte in out_of_bound_2 else "Le Roi ne peut arriver sur un pion !"
 
 def test_main_jouable():
+# On teste pour deux positions 1 et 2 du roi sur notre faux plateau les cartes qui sont jouables dans le deck.
     main_jouable_1 = rr.main_jouable(faux_plateau, faux_l_roi, faux_c_roi, faux_deck)
     main_jouable_2 = rr.main_jouable(faux_plateau, 1, 7, faux_deck)
+# Teste que seulement les cartes jouables du deck dans la position 1 sont retournées.    
     for carte in main_jouable_1:
         assert len(main_jouable_1) == 17, "Des cartes jouables n'ont pas été retournées"
         assert carte in ['N1', 'NE1', 'E1', 'SE1', 'S1', 'SO1', 'O1', 'N2', 'E2', 'S2', 'SO2', 'O2', 'NO2', 'N3', 'E3', 'SE3', 'S3'], "Une carte injouable a été retournée"
+# Teste que seulement les cartes jouables du deck dans la position 2 sont retournées.
     for carte in main_jouable_2:
         assert len(main_jouable_2) == 6, "Des cartes jouables n'ont pas été retournées"
         assert carte in ['N1', 'NE1', 'E1', 'SE1', 'SO2', 'S3'], "Une carte injouable a été retournée"
 
-
-def call_boucle_inf():
-    stuck = True
-    assert stuck == False, "Fonction bloquée dans une boucle infinie"
-
 def test_demande_action(monkeypatch):
+# Vérifie que l'on ne peut ni passer ni jouer lorsque la main est vide.
     inputs = iter(["passe", "NE1", "pioche"])
     monkeypatch.setattr('builtins.input', lambda msg: next(inputs))
     result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, [])
     assert result == "pioche", "La fonction ne retourne pas 'pioche' malgré une main vide"
-
+#Vérifie que l'on ne peut que passer lorsque la main fournie est injouable et pleine.
     inputs = iter(["NO1", "pioche", "passe"])
     result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["NO1", "NO1", "NO1", "NO1", "NO1"])
-    assert result == "passe", "La fonction ne retourne pas 'passe' malgré une main injouable et une main pleine"
-
+    assert result == "passe", "La fonction ne retourne pas 'passe' malgré une main injouable et pleine"
+#Vérifie que l'on ne peut que retourner une carte valide lorsque la main et pleine et des coups disponibles.
     inputs = iter(["pioche", "passe", "N1"])
     result = rr.demande_action("Blanc", faux_plateau, faux_l_roi, faux_c_roi, ["N1", "N1", "N1", "N1", "N1"])
     assert result == "N1", "La fonction ne retourne pas la carte indiquée malgré une main pleine et une carte jouable."
 
+# Fonction pour calculer en interne la véritable position du roi en fonction de la carte fournie. Sert à tester bouge_le_roi().
 def calc_pos_arrivee(faux_l_roi, faux_c_roi, carte):
     true_l_roi = faux_l_roi
     true_c_roi = faux_c_roi
@@ -122,10 +124,11 @@ def calc_pos_arrivee(faux_l_roi, faux_c_roi, carte):
     return true_l_roi, true_c_roi
     
 def test_bouge_le_roi():
+# On teste que pour les mains de chaque joueur, la case d'arrivée du roi est bien la bonne.
     for main_joueurs in [fausse_main_rouge, fausse_main_blanc]:
         for carte in main_joueurs:
             plateau, new_l_roi, new_c_roi, main_r, main_b, defausse = rr.bouge_le_roi(faux_plateau, faux_l_roi, faux_c_roi, main_joueurs, [], fausse_defausse, carte, "Rouge")
-            true_l_roi, true_c_roi = calc_pos_arrivee(faux_l_roi, faux_c_roi, carte)
+            true_l_roi, true_c_roi = calc_pos_arrivee(faux_l_roi, faux_c_roi, carte) # Calcul de la véritable position d'arrivée du roi
             assert true_l_roi == new_l_roi, "Ligne d'arrivée du roi mal calculée"
             assert true_c_roi == new_c_roi, "Colonne d'arrivée du roi mal calculée"
             assert plateau[new_l_roi][new_c_roi] == "R", "Case d'arrivée du roi mal annotée sur le plateau"
@@ -133,6 +136,7 @@ def test_bouge_le_roi():
             assert carte in defausse, "La carte jouée n'est pas arrivée dans la défausse"
 
 def test_territoire():
+# Vérification du territoire retourné pour des cases spécifiques de notre faux plateau.
     assert type(rr.territoire(faux_plateau, 0, 0, "Rouge")) == list, "Le territoire retourné doit être une liste !"
     assert rr.territoire(faux_plateau, 0, 0, "Rouge") == [], "Un territoire != [] a été retourné pour une case vide"
     assert rr.territoire(faux_plateau, 2, 1, "Blanc") == [], "Un territoire != [] a été retourné alors que la case testée et de la couleur opposée"
@@ -142,5 +146,6 @@ def test_territoire():
     assert rr.territoire(faux_plateau, 1, 5, "Rouge") == [(1, 5), (1, 4)], "Territoire mal déterminé"
 
 def test_score():
+#Vérification du score des deux joueurs pour notre faux plateau.
     assert rr.score(faux_plateau, "Rouge") == 15, "Score mal calculé pour les Rouges"
     assert rr.score(faux_plateau, "Blanc") == 24, "Score mal calculé pour les blancs"
