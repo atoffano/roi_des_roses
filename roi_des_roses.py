@@ -94,17 +94,16 @@ def main_jouable(plateau, l_roi, c_roi, main):
 ######################################
 
 def demande_action(couleur, plateau, l_roi, c_roi, main):
-    print("Vous  êtes le  joueur " + couleur + ", que souhaitez -vous  faire ?\n")
+    action = input(f"Vous êtes le joueur {couleur}, que souhaitez vous faire ? ")
 # On demande une action et on teste sa validité. On recommence jusqu'à ce que le joueur donne une action valide
     while True: 
-        action = input()
         if action == "passe" and main_jouable(plateau, l_roi, c_roi, main) == [] and len(main) == 5:
             return action
         if action == "pioche" and len(main) < 5: # On vérifie que la main n'est pas pleine si le joueur choisit de piocher.
             return action
         if action in main_jouable(plateau, l_roi, c_roi, main):
             return action
-        print("Action impossible, que souhaitez-vous faire ? ")
+        action = input("Action impossible, que souhaitez-vous faire ? ")
 
 
 ####################
