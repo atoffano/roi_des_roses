@@ -1,10 +1,12 @@
 import random
 import copy
-from typing import Optional 
-
+import numpy as np
+import random
+import time
 #############################
 ### Initialisation du jeu ###
 #############################
+
 def init_jeu(nb_lignes, nb_colonnes):
 
     # Initialisation des variables
@@ -27,36 +29,8 @@ def init_jeu(nb_lignes, nb_colonnes):
 ### Affichage de l'état du jeu ###
 ##################################
 
-# Affiche la main du joueur de la couleur renseignée
-def afficher_main(couleur, main):
-    main_a_afficher = couleur + " : "
-    if main != []:
-        for i in range(len(main)-1):
-            main_a_afficher += main[i] + " "
-        main_a_afficher += main[-1]
-    print(main_a_afficher)
 
-def afficher_jeu(plateau, l_roi, c_roi, main_r, main_b):
-    afficher_main("Rouge", main_r)
-    afficher_main("Blanc", main_b)
 
-    for i in range(len(plateau)):
-        print("-" * 6 + "-" * 5 *(len(plateau)-1))
-        for j in range(len(plateau)) :
-            car = ""
-            if l_roi == i and c_roi == j:
-                car = "X"
-            else:
-                car = " "
-            if plateau[i][j] == "B" :
-                car = car + "B"
-            elif plateau[i][j] == "R" :
-                car = car + "R"
-            else:
-                car = car + " "
-            print(f"| {car} ",end="")
-        print ("|")
-    print("-" * 6 + "-" * 5 *(len(plateau)-1))
 
 #################################
 ### Mouvement du roi possible ###
@@ -215,10 +189,7 @@ def main():
             couleur = "Blanc"
             main = mb
 
-        afficher_jeu(plt, lr, cr, mr, mb)   #on affiche l'état du jeu
-
         action = play(plt , lr , cr , mr , mb , couleur)#return action
-
     # Si le joueur pioche:
         if action == "pioche": 
             if pioche == []: # Si la pioche est vide, on mélange la défausse avant de la remettre dans la pioche.
@@ -250,26 +221,126 @@ def main():
     # Si on sort de la boucle de jeu:
     sb = score(plt, "Blanc")
     sr = score(plt, "Rouge")
-    print(f"Blanc: {sb}")   # On affiche les scores
-    print(f"Rouge: {sr}")
-    if sr > sb :
-        print("Rouge a gagné la partie")        # On affiche le gagnant
-    elif sr < sb :
-        print("Blanc a gagné la partie")
-    else:
-        print("Egalité")
+
+    stat[cnt] = (sb,sr)
 
 
 ##################################################################################################################
 
-def name():
-    return "graou"
+def position_arrive_carte(carte,l_roi, c_roi):  #fonction qui retourne positon eventuelle du roi si je joue la carte placée argument
+    new_l_roi = l_roi
+    new_c_roi = c_roi
+    dist_parcourue = int(carte[-1])
+    for i in range(len(carte)-1):
+        if carte[i] == 'N':
+            new_l_roi -= dist_parcourue
+        elif carte[i] == 'E':
+            new_c_roi += dist_parcourue        
+        elif carte[i] == 'S':
+            new_l_roi += dist_parcourue
+        else:
+            new_c_roi -= dist_parcourue
+    return (new_l_roi, new_c_roi)
+
+def play_demolition_man(plateau, l_roi, c_roi, main_r, main_b, couleur):
+    if couleur == "Rouge":
+        main = main_r
+        pion = "R"
+        main_adv = main_b
+        pion_adv = "B"
+    else :
+        main = main_b
+        pion = "B"
+        main_adv = main_r
+        pion_adv = "R"
+    
+    mj = main_jouable(plateau, l_roi, c_roi, main)
+
+    if mj == [] and len(main)==5:    #si je peux pas jouer de carte ni piocher je passe
+       return "passe"
+
+    if mj == [] and len(main) != 5: #si je peux pas jouer de carte mais piocher je pioche
+        return "pioche"
+
+    score_voisin = dict()
+    for carte in mj:    #pour chaque carte de ma main jouable
+        new_l_roi, new_c_roi = position_arrive_carte(carte,l_roi, c_roi)    #je calcule la potentiel postion du roi si je joue cette carte
+        mj_adv = main_jouable(plateau, new_l_roi, new_c_roi, main_adv)  #je regarde la main adv jouable au prochain tour si je joue cette carte 
+        if mj_adv == [] :   #si l'adversaire ne pourra pas jouer de carte
+            return carte    #je joue cette carte
+
+        # calcul des pions de notre couleur adjacents à la case d'arriver de cette carte
+        voisin = 0
+       
+        try :   #pour eviter problème d'out of range (du à une sortie du plateau ?!)
+
+            if plateau[new_l_roi+1][new_c_roi] == pion:
+                voisin += 1
+            if plateau[new_l_roi-1][new_c_roi] == pion:
+                voisin += 1
+            if plateau[new_l_roi][new_c_roi+1] == pion:
+                voisin += 1
+            if  plateau[new_l_roi][new_c_roi-1] == pion:
+                voisin += 1
+
+        except IndexError:
+            pass
+
+        else :
+            score_voisin = { carte : int(voisin) }
+            if score_voisin[carte] >= 2:    # si au moins 2 pions adjacents: je joue cette carte (fusion d'un territoire)
+                return carte
+
+        finally:
+
+            # calcul des pions de notre couleur adjacents à la case d'arriver de cette carte
+            voisin_adv = 0
+            try:
+
+                if plateau[new_l_roi+1][new_c_roi] == pion_adv:
+                    voisin_adv += 1
+                if plateau[new_l_roi-1][new_c_roi] == pion_adv:
+                    voisin_adv += 1
+                if plateau[new_l_roi][new_c_roi+1] == pion_adv:
+                    voisin_adv += 1
+                if plateau[new_l_roi][new_c_roi-1] == pion_adv:
+                    voisin_adv += 1
+
+            except IndexError:
+                pass
+
+            else:
+                score_voisin_adv = { carte : int(voisin_adv) }
+                if score_voisin_adv[carte] >= 2:    # si au moins 2 pions adverses adjacents: je joue cette carte (blocage d'un territoire)
+                    return carte
+                if score_voisin[carte] == 1:    # si 1 pion adjacent: je joue cette carte
+                    return carte
+            finally:
+
+                if len(main)<5: #si je peux piocher, je pioche
+                    return "pioche"
+
+                else:   #si je peux pas piocher ni passer, je joue une carte de merde au pif
+                    i = random.randint(0, (len(mj)-1))
+                    return mj[i]
 
 def play(plateau , l_roi , c_roi , main_r , main_b , couleur):
     if couleur == "Rouge":
-        main = main_r
-    else :
-        main = main_b
+        return play_demolition_man(plateau , l_roi , c_roi , main_r, main_b, couleur)
+    return play_graou(plateau, l_roi, c_roi, main_r, main_b, couleur)
+
+def play_suzanne(plateau , l_roi , c_roi , main_r):
+    main = main_r
+    if len(main) < 5:
+        return "pioche"
+    else:
+        for carte in main:
+            if mouvement_possible(plateau, l_roi, c_roi, carte):
+                return carte
+        return "passe"
+
+def play_graou(plateau, l_roi, c_roi, main_r, main_b, couleur):
+    main = main_b
     option = main_jouable(plateau, l_roi, c_roi, main)
     if len(main) == 5 and option == []:
         return 'passe'
@@ -277,7 +348,7 @@ def play(plateau , l_roi , c_roi , main_r , main_b , couleur):
         return "pioche"
     return get_value(option, main_r, plateau, couleur, l_roi, c_roi)
 
-def center_value(plt, l_pion, c_pion):
+def center_value(plt, l_pion, c_pion, carte):
     center = len(plt)//2
     return abs(l_pion-center + c_pion-center)
     
@@ -304,7 +375,7 @@ def get_value(option, main_r, plateau, couleur, l_roi, c_roi):
     for carte in option:
         l_pion, c_pion = calc_pos(carte)
         plt[l_pion][c_pion] == "R" if couleur == "Rouge" else "B"
-        concentration_value[center_value(plt, l_pion, c_pion)] = carte
+        concentration_value[center_value(plt, l_pion, c_pion, carte)] = carte
         terr_value[len(territoire(plt, l_pion, c_pion, couleur))**2] = carte
         spread_value[len(check_voisins(plateau, l_pion, c_pion, couleur))] = carte
     coup = converge(plt, max(concentration_value.keys()), max(terr_value.keys()), max(spread_value.keys()))
@@ -313,9 +384,11 @@ def get_value(option, main_r, plateau, couleur, l_roi, c_roi):
     elif coup == 'concentration_value':
         return concentration_value[max(concentration_value.keys())]
     return spread_value[max(spread_value.keys())]
+    # if max(terr_value.keys()) != 0:
+    #     return terr_value[max(terr_value.keys())]
+    # return concentration_value[min(concentration_value.keys())]
 
 def converge(plt, concentration_value, terr_value, spread_value):
-    coeff = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
     concentration_value = concentration_value*coeff['cv']
     terr_value = terr_value*coeff['tv']
     spread_value = spread_value*coeff['sv']
@@ -326,5 +399,27 @@ def converge(plt, concentration_value, terr_value, spread_value):
         return 'concentration_value'
     return 'spread_value'
 
+
 if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
-    main()
+    cnt = 0
+    graou = 0
+    suzanne = 0
+    draw = 0
+    stat = {}
+    ngame = 10000
+    coeff = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
+    while cnt < ngame:
+        start = time.time() 
+        main()
+        cnt += 1
+    for keys, value in stat.items():
+        if value[0] > value[1]:
+            graou += 1
+        elif value[0] < value[1]:
+            suzanne += 1
+        else:
+            draw += 1
+    print('wr de graou ' + str(graou*100/ngame) + '%')
+    print('wr de demolition_man ' + str(suzanne*100/ngame) + '%')
+    print('taux draw ' + str(draw*100/ngame) + '%')
+    print(coeff)
