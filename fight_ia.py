@@ -406,7 +406,7 @@ if __name__ == "__main__":      #code pour executer la fonction main à l'ouvert
     suzanne = 0
     draw = 0
     stat = {}
-    ngame = 10000
+    ngame = 1000
     coeff = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
     while cnt < ngame:
         start = time.time() 

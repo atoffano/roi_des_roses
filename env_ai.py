@@ -221,35 +221,29 @@ def main():
     # Si on sort de la boucle de jeu:
     sb = score(plt, "Blanc")
     sr = score(plt, "Rouge")
-    if sb < sr:
-        coeff['tv'] += random.randint(-10, +10)*0.01
-        coeff['cv'] += random.randint(-10, +10)*0.01
-        coeff['sv'] += random.randint(-10, +10)*0.01
+    if train == True:
+        if sb < sr:
+            coeff2['tv'] += random.randint(-10, +10)*0.01
+            coeff2['cv'] += random.randint(-10, +10)*0.01
+            coeff2['sv'] += random.randint(-10, +10)*0.01
+        else:
+            coeff['tv'] += random.randint(-10, +10)*0.01
+            coeff['cv'] += random.randint(-10, +10)*0.01
+            coeff['sv'] += random.randint(-10, +10)*0.01
     stat[cnt] = (sb,sr)
 
 
 ##################################################################################################################
+
 
 def name():
     return "graou"
 
 def play(plateau , l_roi , c_roi , main_r , main_b , couleur):
     if couleur == "Rouge":
-        return play_suzanne(plateau , l_roi , c_roi , main_r)
-    return play_graou(plateau, l_roi, c_roi, main_r, main_b, couleur)
-
-def play_suzanne(plateau , l_roi , c_roi , main_r):
-    main = main_r
-    if len(main) < 5:
-        return "pioche"
-    else:
-        for carte in main:
-            if mouvement_possible(plateau, l_roi, c_roi, carte):
-                return carte
-        return "passe"
-
-def play_graou(plateau, l_roi, c_roi, main_r, main_b, couleur):
-    main = main_b
+        main = main_r
+    else :
+        main = main_b
     option = main_jouable(plateau, l_roi, c_roi, main)
     if len(main) == 5 and option == []:
         return 'passe'
@@ -257,7 +251,7 @@ def play_graou(plateau, l_roi, c_roi, main_r, main_b, couleur):
         return "pioche"
     return get_value(option, main_r, plateau, couleur, l_roi, c_roi)
 
-def center_value(plt, l_pion, c_pion, carte):
+def center_value(plt, l_pion, c_pion):
     center = len(plt)//2
     return abs(l_pion-center + c_pion-center)
     
@@ -284,30 +278,32 @@ def get_value(option, main_r, plateau, couleur, l_roi, c_roi):
     for carte in option:
         l_pion, c_pion = calc_pos(carte)
         plt[l_pion][c_pion] == "R" if couleur == "Rouge" else "B"
-        concentration_value[center_value(plt, l_pion, c_pion, carte)] = carte
+        concentration_value[center_value(plt, l_pion, c_pion)] = carte
         terr_value[len(territoire(plt, l_pion, c_pion, couleur))**2] = carte
         spread_value[len(check_voisins(plateau, l_pion, c_pion, couleur))] = carte
-    coup = converge(plt, max(concentration_value.keys()), max(terr_value.keys()), max(spread_value.keys()))
+    coup = converge(plt, max(concentration_value.keys()), max(terr_value.keys()), max(spread_value.keys()), couleur)
     if coup == 'terr_value':
         return terr_value[max(terr_value.keys())]
     elif coup == 'concentration_value':
         return concentration_value[max(concentration_value.keys())]
     return spread_value[max(spread_value.keys())]
-    # if max(terr_value.keys()) != 0:
-    #     return terr_value[max(terr_value.keys())]
-    # return concentration_value[min(concentration_value.keys())]
 
-def converge(plt, concentration_value, terr_value, spread_value):
-    concentration_value = concentration_value*coeff['cv']
-    terr_value = terr_value*coeff['tv']
-    spread_value = spread_value*coeff['sv']
-    decision = max(concentration_value, terr_value, spread_value)
+def converge(plt, concentration_value, terr_value, spread_value, couleur):
+    if couleur == "Rouge":
+        concentration_value = concentration_value*coeff['cv']
+        terr_value = terr_value*coeff['tv']
+        spread_value = spread_value*coeff['sv']
+        decision = max(concentration_value, terr_value, spread_value)
+    else:
+        concentration_value = concentration_value*coeff2['cv']
+        terr_value = terr_value*coeff2['tv']
+        spread_value = spread_value*coeff2['sv']
+        decision = max(concentration_value, terr_value, spread_value)
     if  decision == terr_value:
         return 'terr_value'
     elif decision == concentration_value:
         return 'concentration_value'
     return 'spread_value'
-
 
 if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
     cnt = 0
@@ -315,8 +311,10 @@ if __name__ == "__main__":      #code pour executer la fonction main à l'ouvert
     suzanne = 0
     draw = 0
     stat = {}
-    ngame = 10000
+    ngame = 1000
     coeff = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
+    coeff2 = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
+    train = False
     while cnt < ngame:
         start = time.time() 
         main()
@@ -329,6 +327,9 @@ if __name__ == "__main__":      #code pour executer la fonction main à l'ouvert
         else:
             draw += 1
     print('wr de graou ' + str(graou*100/ngame) + '%')
-    print('wr de suzanne ' + str(suzanne*100/ngame) + '%')
+    print('wr de graou2 ' + str(suzanne*100/ngame) + '%')
     print('taux draw ' + str(draw*100/ngame) + '%')
+    print('coeff')
     print(coeff)
+    print('coeff2')
+    print(coeff2)

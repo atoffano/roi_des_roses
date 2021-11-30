@@ -277,10 +277,12 @@ def play(plateau , l_roi , c_roi , main_r , main_b , couleur):
         return "pioche"
     return get_value(option, main_r, plateau, couleur, l_roi, c_roi)
 
+# Détermine la distance au centre du plateau
 def center_value(plt, l_pion, c_pion):
     center = len(plt)//2
     return abs(l_pion-center + c_pion-center)
-    
+
+# Détermine la position d'arrivée du roi pour une carte jouée
 def calc_pos(carte):
     dist_parcourue = int(carte[-1]) # Récupère l'ordre de grandeur associé à la carte (i.e 1, 2 ou 3)
     c_pion = 0
@@ -296,6 +298,8 @@ def calc_pos(carte):
             c_pion -= dist_parcourue
     return l_pion, c_pion
 
+# Calcule la valeur du coup en fonction de trois paramètres: l'agrandissement du territoire, la distance au centre et la dispersion des pièces les unes par rapport aux autres..
+# et ce pour tous les coups légaux dans la main
 def get_value(option, main_r, plateau, couleur, l_roi, c_roi):
     plt = copy.deepcopy(plateau)
     terr_value = {}
@@ -314,6 +318,11 @@ def get_value(option, main_r, plateau, couleur, l_roi, c_roi):
         return concentration_value[max(concentration_value.keys())]
     return spread_value[max(spread_value.keys())]
 
+# fonction permettant de normaliser la valeur des trois paramètres calculés précédemment.
+# On applique pour se faire un coefficient spécifique à chacun d'entre eux.
+# Le coefficient a été calculé au préalable en faisant jouer l'ia contre différents types d'adversaires (dont elle même et tata suzanne)
+# Les coefficients sont modifiés d'une petite valeur aléatoire à chaque fois que graou perd.
+# La fonction renvoie à terme une carte présentant la plus haute valeur.
 def converge(plt, concentration_value, terr_value, spread_value):
     coeff = {'tv':-5.310000000000012, 'sv':3.5899999999999985, 'cv':7.130000000000021}
     concentration_value = concentration_value*coeff['cv']
