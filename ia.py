@@ -1,5 +1,6 @@
 import random
-import copy 
+import copy
+from typing import Optional 
 
 #############################
 ### Initialisation du jeu ###
@@ -216,7 +217,7 @@ def main():
 
         afficher_jeu(plt, lr, cr, mr, mb)   #on affiche l'état du jeu
 
-        action = demande_action(couleur, plt, lr, cr, main)#return soit passe, soit pioche, soit une carte jouable
+        action = play(plt , lr , cr , mr , mb , couleur)#return action
 
     # Si le joueur pioche:
         if action == "pioche": 
@@ -258,10 +259,6 @@ def main():
     else:
         print("Egalité")
 
-# if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
-#     main()
-
-
 
 ##################################################################################################################
 
@@ -269,13 +266,15 @@ def name():
     return "graou"
 
 def play(plateau , l_roi , c_roi , main_r , main_b , couleur):
+    print('playing')
     main = main_r if couleur == "Rouge" else main_b
-    if len(main) == 0:
-        return "pioche"
     option = main_jouable(plateau, l_roi, c_roi, main)
     if len(main) == 5 and option == []:
         return 'passe'
-    return get_value(main, option, plateau, l_roi, c_roi, couleur)[0]
+    if len(main) < 5:
+        return "pioche"
+    print('options = ' + str(option))
+    return get_value(main, option, plateau, l_roi, c_roi, couleur)
 
 def get_value(main, option, plateau, l_roi, c_roi, couleur):
     plt = copy.deepcopy(plateau)
@@ -295,6 +294,9 @@ def get_value(main, option, plateau, l_roi, c_roi, couleur):
             else:
                 c_pion -= dist_parcourue
         plt[l_pion][c_pion] == "R" if couleur == "Rouge" else "B"
-        value = territoire(plt, l_pion, c_pion, couleur)
+        value = len(territoire(plt, l_pion, c_pion, couleur))
         option_value[carte] = value
-    return sorted(option_value.items(), key=lambda item: item[0]))
+    return sorted(option_value, key=option_value.get)[0]
+
+if __name__ == "__main__":      #code pour executer la fonction main à l'ouverture du fichier
+    main()
