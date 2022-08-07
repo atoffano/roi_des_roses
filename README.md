@@ -8,3 +8,4 @@ Each players tries to maximize the number of adjacent pawns, forming a 'territor
 The exact location depend on which cards the player has in hand. Each card represents a position on the board relative to the player's king.
 Multiple actions are available to the players, such as moving their king, placing a piece or drawing a card.
 
+A detailled description of the game along coding guidelines can be found in the associated .pdf.
